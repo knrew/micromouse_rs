@@ -25,20 +25,18 @@ impl Wall {
         }
     }
 
-    pub fn from_str(s: &str) -> Result<Wall, String> {
-        if s.len() != 1 { return Err("Input ONE character!".to_string()); }
-
-        let num = match s.parse::<u8>() {
+    pub fn from_str(c: char) -> Result<Wall, String> {
+        let num = match c.to_string().parse::<u8>() {
             Ok(o) => o,
             Err(_) => {
-                match s {
-                    "a" => 10,
-                    "b" => 11,
-                    "c" => 12,
-                    "d" => 13,
-                    "e" => 14,
-                    "f" => 15,
-                    _ => return Err(format!("{} is invalid character!", s))
+                match c {
+                    'a' => 10,
+                    'b' => 11,
+                    'c' => 12,
+                    'd' => 13,
+                    'e' => 14,
+                    'f' => 15,
+                    _ => return Err(format!("{} is invalid character!", c))
                 }
             }
         };
@@ -73,7 +71,7 @@ impl Wall {
 
     pub fn print_hex(maze: &Maze) {
         for i in maze.iter() {
-            for (_, j) in i.iter().enumerate() {
+            for j in i.iter() {
                 print!("{:x} ", j.to_bit());
             }
             println!("");
@@ -82,14 +80,10 @@ impl Wall {
 
     pub fn print_bin(maze: &Maze) {
         for i in maze.iter() {
-            for (_, j) in i.iter().enumerate() {
+            for j in i.iter() {
                 print!("{:0>8b} ", j.to_bit());
             }
             println!("");
         }
     }
-
 }
-
-
-
