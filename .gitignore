@@ -1,4 +1,6 @@
-/target
+\target
 **/*.rs.bk
 
 \.idea/
+
+maze_parser/micromouse_maze_tool/
