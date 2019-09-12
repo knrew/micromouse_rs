@@ -1,6 +1,4 @@
 use crate::wall;
-use std::fs::read_to_string;
-use std::io::Error;
 
 pub fn read(maze_file: &str) -> Result<Vec<String>, String> {
     let reader = match std::fs::File::open(maze_file) {

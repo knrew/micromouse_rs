@@ -8,7 +8,7 @@ fn main() {
     let maze_path = format!("{}/{}", MAZE_FOLDER_PATH.to_string(), MAZE_NAME);
     let output_path = format!("{}/{}", OUTPUT_FOLDER_PATH.to_string(), MAZE_NAME);
 
-    println!("input:{} -> output{}", maze_path, output_path);
+    println!("input:{} -> output:{}", maze_path, output_path);
 
     match process(&maze_path, &output_path) {
         Ok(_) => {}
