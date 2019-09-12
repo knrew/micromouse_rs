@@ -1,5 +1,5 @@
 [package]
-name = "mouse_visualizer"
+name = "visualizer"
 version = "0.1.0"
 authors = ["Ryunosuke <rew.7cc.12.1f@gmail.com>"]
 edition = "2018"
