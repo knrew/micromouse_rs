@@ -7,7 +7,7 @@ pub fn parse(raw_maze: &Vec<String>, maze_size: usize) -> wall::Maze {
 
     let mut r: usize = 0;
     for (row, line) in raw_maze.iter().enumerate() {
-        println!("{}", line);
+//        println!("{}", line);
 
         if row != 0 && row % 2 == 0 { r += 1; }
 
