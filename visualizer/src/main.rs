@@ -3,9 +3,9 @@ use visualizer::*;
 fn main() {
     const MAZE_SIZE: i32 = 16;
     //    const MAZE_FILE: &str = "poyo.txt";
-    const MAZE_FILE: &str = "../../maze_data/maze0001.txt";
-//    const SEARCH_ROUTE_FILE: &str = "search_route.csv";
-//    const OPTIMAL_ROUTE_FILE: &str = "optimal_route.csv";
+    const MAZE_FILE: &str = "../../maze_data/maze.txt";
+    const SEARCH_ROUTE_FILE: &str = "../../maze_solver/search_route.csv";
+    const OPTIMAL_ROUTE_FILE: &str = "../../maze_solver/optimal_route.csv";
 
     // read maze data
     let maze = match read_maze(MAZE_FILE) {
@@ -13,47 +13,50 @@ fn main() {
         Err(e) => panic!("{}", e)
     };
 
-//    let (x, y) = match read_route(SEARCH_ROUTE_FILE) {
-//        Ok(o) => o,
-//        Err(e) => panic!("{}", e)
-//    };
+    let (x, y) = match read_route(SEARCH_ROUTE_FILE) {
+        Ok(o) => o,
+        Err(e) => panic!("{}", e)
+    };
 
-//    let mut plotter = maze_plotter::Plotter::new();
     let mut fig = gnuplot::Figure::new();
+    fig.clear_axes();
     let ax = fig.axes2d();
     maze_plotter::plot_maze(&mut fig.axes2d(), &maze, MAZE_SIZE);
     fig.show();
 
-//    {
-//        let mut point_x: Vec<f64> = Vec::new();
-//        let mut point_y: Vec<f64> = Vec::new();
-//        for (i, _) in x.iter().enumerate() {
-//            fig.clear_axes();
-//            let mut ax = fig.axes2d();
-//            plot_maze(&mut ax, &maze, MAZE_SIZE);
-//            ax.points(&[x[i]], &[y[i]], &[gnuplot::PointSymbol('O'), gnuplot::Color("red")]);
-//
-//            if point_x.len() >= 1 {
-//                ax.points(&point_x, &point_y, &[gnuplot::PointSymbol('O'), gnuplot::Color("blue")]);
-//            }
-//
-//            fig.show();
-//            point_x.push(x[i]);
-//            point_y.push(y[i]);
-//        }
-//    }
-//
-//    let (x, y) = match read_route(OPTIMAL_ROUTE_FILE) {
-//        Ok(o) => o,
-//        Err(e) => panic!("{}", e)
-//    };
-//
-//    fig.clear_axes();
-//    let mut ax = fig.axes2d();
-//    plot_maze(&mut ax, &maze, MAZE_SIZE);
-//    ax.points(&x, &y, &[gnuplot::PointSymbol('O'), gnuplot::Color("blue")]);
-//    ax.lines(&x, &y, &[gnuplot::PointSymbol('O'), gnuplot::Color("red")]);
-//    fig.show();
+//    return;
+
+    let mut point_x: Vec<f64> = Vec::new();
+    let mut point_y: Vec<f64> = Vec::new();
+    for (i, _) in x.iter().enumerate() {
+        fig.clear_axes();
+        let mut ax = fig.axes2d();
+        maze_plotter::plot_maze(&mut ax, &maze, MAZE_SIZE);
+        ax.points(&[x[i]], &[y[i]], &[gnuplot::PointSymbol('O'), gnuplot::Color("red")]);
+
+        if point_x.len() >= 1 {
+            ax.points(&point_x, &point_y, &[gnuplot::PointSymbol('O'), gnuplot::Color("blue")]);
+        }
+
+        fig.show();
+        point_x.push(x[i]);
+        point_y.push(y[i]);
+
+//        std::thread::sleep(std::time::Duration::from_millis(500));
+    }
+
+
+    let (x, y) = match read_route(OPTIMAL_ROUTE_FILE) {
+        Ok(o) => o,
+        Err(e) => panic!("{}", e)
+    };
+
+    fig.clear_axes();
+    let mut ax = fig.axes2d();
+    maze_plotter::plot_maze(&mut ax, &maze, MAZE_SIZE);
+    ax.points(&point_x, &point_y, &[gnuplot::PointSymbol('O'), gnuplot::Color("blue")]);
+    ax.lines(&x, &y, &[gnuplot::PointSymbol('O'), gnuplot::Color("red")]);
+    fig.show();
 
     println!("fin.");
 }
