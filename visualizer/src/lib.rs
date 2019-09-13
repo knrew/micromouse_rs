@@ -2,4 +2,5 @@
 #![forbid(unstable_features)]
 
 pub mod wall;
-pub mod maze_plotter;
+pub mod io;
+pub mod plotter;
