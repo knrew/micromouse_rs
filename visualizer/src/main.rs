@@ -1,11 +1,12 @@
 use visualizer::*;
+use gnuplot::AxesCommon;
 
 fn main() {
     const MAZE_SIZE: i32 = 16;
     //    const MAZE_FILE: &str = "poyo.txt";
-    const MAZE_FILE: &str = "../../maze_data/maze.txt";
-    const SEARCH_ROUTE_FILE: &str = "../../maze_solver/search_route.csv";
-    const OPTIMAL_ROUTE_FILE: &str = "../../maze_solver/optimal_route.csv";
+    const MAZE_FILE: &str = "../../maze_data/maze0000.txt";
+    const SEARCH_ROUTE_FILE: &str = "../../maze_solver/search.csv";
+    const OPTIMAL_ROUTE_FILE: &str = "../../maze_solver/shortest.csv";
 
     // read maze data
     let maze = match read_maze(MAZE_FILE) {
@@ -20,7 +21,9 @@ fn main() {
 
     let mut fig = gnuplot::Figure::new();
     fig.clear_axes();
-    let ax = fig.axes2d();
+    let mut ax = fig.axes2d().set_aspect_ratio(gnuplot::Fix(1.0))
+        .set_x_range(gnuplot::Fix(-1.0), gnuplot::Fix(17.0))
+        .set_y_range(gnuplot::Fix(-1.0), gnuplot::Fix(17.0));
     maze_plotter::plot_maze(&mut fig.axes2d(), &maze, MAZE_SIZE);
     fig.show();
 
@@ -30,21 +33,23 @@ fn main() {
     let mut point_y: Vec<f64> = Vec::new();
     for (i, _) in x.iter().enumerate() {
         fig.clear_axes();
-        let mut ax = fig.axes2d();
+        let mut ax = fig.axes2d().set_aspect_ratio(gnuplot::Fix(1.0))
+            .set_x_range(gnuplot::Fix(-1.0), gnuplot::Fix(17.0))
+            .set_y_range(gnuplot::Fix(-1.0), gnuplot::Fix(17.0));
         maze_plotter::plot_maze(&mut ax, &maze, MAZE_SIZE);
-        ax.points(&[x[i]], &[y[i]], &[gnuplot::PointSymbol('O'), gnuplot::Color("red")]);
 
         if point_x.len() >= 1 {
-            ax.points(&point_x, &point_y, &[gnuplot::PointSymbol('O'), gnuplot::Color("blue")]);
+//            ax.points(&point_x, &point_y, &[gnuplot::PointSymbol('O'), gnuplot::Color("blue")]);
         }
+
+        ax.points(&[x[i]], &[y[i]], &[gnuplot::PointSymbol('O'), gnuplot::Color("red")]);
 
         fig.show();
         point_x.push(x[i]);
         point_y.push(y[i]);
 
-//        std::thread::sleep(std::time::Duration::from_millis(500));
+//        std::thread::sleep(std::time::Duration::from_millis(100));
     }
-
 
     let (x, y) = match read_route(OPTIMAL_ROUTE_FILE) {
         Ok(o) => o,
@@ -52,7 +57,9 @@ fn main() {
     };
 
     fig.clear_axes();
-    let mut ax = fig.axes2d();
+    let mut ax = fig.axes2d().set_aspect_ratio(gnuplot::Fix(1.0))
+        .set_x_range(gnuplot::Fix(-1.0), gnuplot::Fix(17.0))
+        .set_y_range(gnuplot::Fix(-1.0), gnuplot::Fix(17.0));
     maze_plotter::plot_maze(&mut ax, &maze, MAZE_SIZE);
     ax.points(&point_x, &point_y, &[gnuplot::PointSymbol('O'), gnuplot::Color("blue")]);
     ax.lines(&x, &y, &[gnuplot::PointSymbol('O'), gnuplot::Color("red")]);
