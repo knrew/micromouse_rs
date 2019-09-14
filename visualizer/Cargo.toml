@@ -9,3 +9,12 @@ edition = "2018"
 [dependencies]
 gnuplot="0.0.31"
 dirs = "2.0.2"
+console="*"
+
+[[example]]
+name = "gnu"
+path = "examples/gnu.rs"
+
+[[example]]
+name = "cosolue"
+path = "examples/console.rs"

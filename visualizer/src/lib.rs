@@ -3,4 +3,4 @@
 
 pub mod wall;
 pub mod io;
-pub mod plotter;
+pub mod gnu_plotter;
