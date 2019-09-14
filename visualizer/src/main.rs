@@ -2,7 +2,7 @@ use visualizer::*;
 
 fn main() {
     const MAZE_SIZE: i32 = 16;
-    const MAZE_NAME: &str = "maze0010.txt";
+    const MAZE_NAME: &str = "maze0037.txt";
     const PROGRAM_NAME: &str = "examples/search_exsample";
 
     let micromouse_root: &str = &format!("{}/micromouse/", dirs::home_dir().unwrap().display());
@@ -21,9 +21,9 @@ fn main() {
     }
 
     if true { //make solver
-        process("mkdir", &["-p", &build_dir].to_vec(), "./").expect("failed to mkdir build");
-        process("cmake", &[solver_dir].to_vec(), &build_dir).expect("failed to cmake");
-        process("make", &[].to_vec(), &build_dir).expect("failed to make");
+        process("mkdir", &["-p", build_dir].to_vec(), "./").expect("failed to mkdir build");
+        process("cmake", &[solver_dir].to_vec(), build_dir).expect("failed to cmake");
+        process("make", &[].to_vec(), build_dir).expect("failed to make");
     }
 
     process(&program, &[maze_file, search_route_file, shortest_route_file].to_vec(), "./").expect("");

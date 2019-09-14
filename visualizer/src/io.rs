@@ -11,7 +11,7 @@ impl Route {
     }
 }
 
-pub fn read_maze(maze_file: &str) -> Result<Vec<Vec<wall::Wall>>, std::io::Error> {
+pub fn read_maze(maze_file: &str) -> Result<wall::Maze, std::io::Error> {
     let mut ret: Vec<Vec<wall::Wall>> = Vec::new();
 
     let reader = match std::fs::File::open(maze_file) {
