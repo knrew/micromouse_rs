@@ -10,6 +10,13 @@ fn make_ax(fig: &mut gnuplot::Figure) -> &mut gnuplot::Axes2D {
     ax
 }
 
+pub fn plot(maze: &wall::Maze, maze_size: i32, search: &io::Route, shortest: &io::Route, interval_ms: u64, history: bool) {
+    let mut fig = gnuplot::Figure::new();
+    plot_maze(&mut fig, maze, maze_size, true);
+    plot_route_with_animation(&mut fig, maze, maze_size, search, interval_ms, history);
+    plot_routes(&mut fig, maze, maze_size, search, shortest);
+}
+
 pub fn plot_maze(fig: &mut gnuplot::Figure, maze: &wall::Maze, maze_size: i32, show: bool) {
     plot_maze_with_ax(make_ax(fig), maze, maze_size);
     if show { fig.show(); }
@@ -48,6 +55,7 @@ pub fn plot_route_with_animation(fig: &mut gnuplot::Figure, maze: &wall::Maze, m
 
         if point.x.len() >= 1 {
             if history {
+//                x.iter().map(|x| x), point.y.iter().map(|y| y + 0.5), point.y.iter().map(|y| y + 1.0), &[gnuplot::FillAlpha(0.5), gnuplot::FillRegion(gnuplot::FillRegionType::Between)]);
                 ax.points(&point.x, &point.y, &[gnuplot::PointSymbol('O'), gnuplot::Color("blue")]);
             }
         }
