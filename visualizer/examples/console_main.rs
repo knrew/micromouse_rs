@@ -25,6 +25,7 @@ fn main() {
     let search = visualizer::io::read_route(search_route_file).expect("failed to search route file.");
     let shortest = visualizer::io::read_route(shortest_route_file).expect("failed to shortest route file.");
 
+
 //    let console_maze_original = visualizer::console::ConsoleMaze::new(MAZE_SIZE as usize);
     let mut console_maze = visualizer::console::ConsoleMaze::new(MAZE_SIZE);
 
@@ -40,8 +41,8 @@ fn main() {
     println!("----------");
     println!("----------");
 
-    for (_, line) in console_maze.maze_style.iter().enumerate() {
-        display.write_new_line(&format!("{}", line)).expect("failed to write.");
+    for (_, line) in console_maze.maze.iter().enumerate() {
+        display.write_new_styled_objects(line).expect("failed to write.");
     }
 
     let mut count = search.x.len();
@@ -50,23 +51,28 @@ fn main() {
     for (i, _) in search.y.iter().enumerate() {
         let x = (search.x[i] - 0.5) as usize;
         let y = (search.y[i] - 0.5) as usize;
-        console_maze.set_by_coordinate(x, y, '*').expect("failed to set.");
+
+        if (i >= 1) {
+            console_maze.set_by_coordinate((search.x[i - 1] - 0.5) as usize, ((search.y[i - 1] - 0.5) as usize), console::style('*').blue()).expect("failed to set.");
+            display.write_styled_objects((MAZE_SIZE - ((search.y[i - 1] - 0.5) as usize)) * 2 - 1, &console_maze.maze[(MAZE_SIZE - ((search.y[i - 1] - 0.5) as usize)) * 2 - 1]).expect("failed to write.");
+        }
+        console_maze.set_by_coordinate(x, y, console::style('*').red()).expect("failed to set.");
 
         let line = (MAZE_SIZE - y) * 2 - 1;
-        display.write_line(line, &format!("{}", &console_maze.maze_style[line])).expect("failed to write.");
+        display.write_styled_objects(line, &console_maze.maze[line]).expect("failed to write.");
 
         count -= 1;
         display.write_line(MAZE_SIZE * 2 + 1, &format!("{}", count)).expect("failed to write.");
-//        std::thread::sleep(std::time::Duration::from_millis(100));
+        std::thread::sleep(std::time::Duration::from_millis(100));
     }
 
     for (i, _) in shortest.y.iter().enumerate() {
         let x = (shortest.x[i] - 0.5) as usize;
         let y = (shortest.y[i] - 0.5) as usize;
-        console_maze.set_by_coordinate(x, y, 'x').expect("failed to set.");
+        console_maze.set_by_coordinate(x, y, console::style('x').red()).expect("failed to set.");
 
         let line = (MAZE_SIZE - y) * 2 - 1;
-        display.write_line(line, &format!("{}", &console_maze.maze_style[line])).expect("failed to write.");
+        display.write_styled_objects(line, &console_maze.maze[line]).expect("failed to write.");
     }
 
     return;
