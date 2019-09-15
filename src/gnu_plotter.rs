@@ -46,7 +46,11 @@ fn plot_maze_with_ax(ax: &mut gnuplot::Axes2D, maze: &wall::Maze, maze_size: i32
 }
 
 pub fn plot_route_with_animation(fig: &mut gnuplot::Figure, maze: &wall::Maze, maze_size: i32, route: &io::Route, interval_ms: u64, history: bool) {
-    let mut point = io::Route::new();
+    struct RouteF64 {
+        x: Vec<f64>,
+        y: Vec<f64>,
+    }
+    let mut point = RouteF64 { x: Vec::new(), y: Vec::new() };
 
     for (i, _) in route.x.iter().enumerate() {
         fig.clear_axes();
@@ -66,9 +70,9 @@ pub fn plot_route_with_animation(fig: &mut gnuplot::Figure, maze: &wall::Maze, m
             }
         }
 
-        ax.points(&[route.x[i]], &[route.y[i]], &[gnuplot::PointSymbol('O'), gnuplot::Color("red")]);
-        point.x.push(route.x[i]);
-        point.y.push(route.y[i]);
+        ax.points(&[route.x[i] as f64 + 0.5], &[route.y[i] as f64 + 0.5], &[gnuplot::PointSymbol('O'), gnuplot::Color("red")]);
+        point.x.push(route.x[i] as f64 + 0.5);
+        point.y.push(route.y[i] as f64 + 0.5);
 
         plot_maze_with_ax(ax, &maze, maze_size);
 
@@ -90,8 +94,13 @@ pub fn plot_routes(fig: &mut gnuplot::Figure, maze: &wall::Maze, maze_size: i32,
 //            ax.fill_between(&[search.x[j] - 0.5, search.x[j] + 0.5], &[search.y[j] - 0.5,search.y[j] - 0.5], &[search.y[j] + 0.5, search.y[j] + 0.5], &[gnuplot::Color("blue"), gnuplot::FillAlpha(0.3), gnuplot::FillRegion(gnuplot::FillRegionType::Between)]);
 //        }
 //    }
-    ax.points(&search.x, &search.y, &[gnuplot::PointSymbol('O'), gnuplot::Color("blue")]);
+    let x: Vec<f64> = search.x.iter().map(|z| z.clone() as f64 + 0.5).collect();
+    let y: Vec<f64> = search.y.iter().map(|z| z.clone() as f64 + 0.5).collect();
+    ax.points(&x, &y, &[gnuplot::PointSymbol('O'), gnuplot::Color("blue")]);
 
-    ax.lines(&shortest.x, &shortest.y, &[gnuplot::PointSymbol('O'), gnuplot::Color("red")]);
+    let x: Vec<f64> = shortest.x.iter().map(|z| z.clone() as f64 + 0.5).collect();
+    let y: Vec<f64> = shortest.y.iter().map(|z| z.clone() as f64 + 0.5).collect();
+    ax.lines(&x, &y, &[gnuplot::PointSymbol('O'), gnuplot::Color("red")]);
+
     fig.show();
 }

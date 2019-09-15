@@ -44,21 +44,21 @@ fn main() {
 
     for (i, _) in search.y.iter().enumerate() {
         if i >= 1 {
-            let x = (search.x[i - 1] - 0.5) as usize;
-            let y = (search.y[i - 1] - 0.5) as usize;
+            let x = search.x[i - 1] as usize;
+            let y = search.y[i - 1] as usize;
             maze_display.set(x, y, &console::style('*').blue()).expect("failed to set.");
         }
 
-        let x = (search.x[i] - 0.5) as usize;
-        let y = (search.y[i] - 0.5) as usize;
+        let x = search.x[i] as usize;
+        let y = search.y[i] as usize;
         maze_display.set(x, y, &console::style('*').red()).expect("failed to set.");
 
         std::thread::sleep(std::time::Duration::from_millis(100));
     }
 
     for (i, _) in shortest.y.iter().enumerate() {
-        let x = (shortest.x[i] - 0.5) as usize;
-        let y = (shortest.y[i] - 0.5) as usize;
+        let x = (shortest.x[i]) as usize;
+        let y = (shortest.y[i]) as usize;
         maze_display.set(x, y, &console::style('x').red()).expect("failed to set.");
     }
 

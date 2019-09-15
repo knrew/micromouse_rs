@@ -1,8 +1,8 @@
 use crate::wall;
 
 pub struct Route {
-    pub x: Vec<f64>,
-    pub y: Vec<f64>,
+    pub x: Vec<i32>,
+    pub y: Vec<i32>,
 }
 
 impl Route {
@@ -67,8 +67,8 @@ pub fn read_route(route_file: &str) -> Result<Route, std::io::Error> {
         let y = line[1].parse::<i32>();
 
         if x.is_ok() && y.is_ok() {
-            route.x.push(x.unwrap() as f64 + 0.5);
-            route.y.push(y.unwrap() as f64 + 0.5);
+            route.x.push(x.unwrap());
+            route.y.push(y.unwrap());
         }
     }
 

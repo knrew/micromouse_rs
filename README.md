@@ -1,1 +1,1 @@
-mouse_visualizer_rs
+micromouse_rs
