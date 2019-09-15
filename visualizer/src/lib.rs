@@ -4,4 +4,4 @@
 pub mod wall;
 pub mod io;
 pub mod gnu_plotter;
-pub mod console_display;
+pub mod console;

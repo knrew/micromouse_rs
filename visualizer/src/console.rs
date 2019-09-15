@@ -48,6 +48,7 @@ impl Display {
 pub struct ConsoleMaze {
     pub size: usize,
     pub maze: Vec<String>,
+//    pub maze: Vec<String>,
 }
 
 impl ConsoleMaze {
@@ -58,13 +59,13 @@ impl ConsoleMaze {
 
             if i % 2 != 0 {
                 s = format!("|   ");
-                for j in 0..(size - 1) {
+                for _j in 0..(size - 1) {
                     s = format!("{}    ", s);
                 }
                 s = format!("{}|", s);
             } else {
                 s = format!("o");
-                for j in 0..size {
+                for _j in 0..size {
                     if i == 0 || i == size * 2 {
                         s = format!("{}---o", s);
                     } else {
@@ -79,7 +80,6 @@ impl ConsoleMaze {
     }
 
     fn set(&mut self, x: usize, y: usize, c: char) -> Result<(), String> {
-//        if (y > self.size) { return Err("invalid y size.".to_string()); }
         let mut tmp: String = String::new();
         for (i, s) in self.maze[y].chars().enumerate() {
             if (i == x) {
@@ -101,10 +101,10 @@ impl ConsoleMaze {
         }
     }
 
-    pub fn set_coordinate(&mut self, x: usize, y: usize, c: char) {
+    pub fn set_by_coordinate(&mut self, x: usize, y: usize, c: char) -> Result<(), String> {
         let x = 2 + x * 4;
         let y = (self.size - y) * 2 + 1 - 2;
-        self.set(x, y, c);
+        self.set(x, y, c)
     }
 
     pub fn set_wall(&mut self, x: usize, y: usize, wall: &wall::Wall) -> Result<(), String> {
@@ -112,20 +112,44 @@ impl ConsoleMaze {
         let y = (self.size - y) * 2 + 1 - 2;
 
         if wall.n {
-            self.set(x - 1, y - 1, '-');
-            self.set(x, y - 1, '-');
-            self.set(x + 1, y - 1, '-');
+            match self.set(x - 1, y - 1, '-') {
+                Ok(_) => {}
+                Err(e) => return Err(e)
+            };
+            match self.set(x, y - 1, '-') {
+                Ok(_) => {}
+                Err(e) => return Err(e)
+            };
+            match self.set(x + 1, y - 1, '-') {
+                Ok(_) => {}
+                Err(e) => return Err(e)
+            };
         }
         if wall.e {
-            self.set(x + 2, y, '|');
+            match self.set(x + 2, y, '|') {
+                Ok(_) => {}
+                Err(e) => return Err(e)
+            };
         }
         if wall.s {
-            self.set(x - 1, y + 1, '-');
-            self.set(x, y + 1, '-');
-            self.set(x + 1, y + 1, '-');
+            match self.set(x - 1, y + 1, '-') {
+                Ok(_) => {}
+                Err(e) => return Err(e)
+            };
+            match self.set(x, y + 1, '-') {
+                Ok(_) => {}
+                Err(e) => return Err(e)
+            };
+            match self.set(x + 1, y + 1, '-') {
+                Ok(_) => {}
+                Err(e) => return Err(e)
+            };
         }
         if wall.w {
-            self.set(x - 2, y, '|');
+            match self.set(x - 2, y, '|') {
+                Ok(_) => {}
+                Err(e) => return Err(e)
+            };
         }
 
         Ok(())
