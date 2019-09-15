@@ -17,4 +17,4 @@ path = "examples/gnu.rs"
 
 [[example]]
 name = "console"
-path = "examples/console.rs"
+path = "examples/console_main.rs"

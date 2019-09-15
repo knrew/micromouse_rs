@@ -47,13 +47,14 @@ impl Display {
 
 pub struct ConsoleMaze {
     pub size: usize,
-    pub maze: Vec<String>,
-//    pub maze: Vec<String>,
+    pub maze_style: Vec<console::StyledObject<String>>,
+    pub maze_str: Vec<String>,
 }
 
 impl ConsoleMaze {
     pub fn new(size: usize) -> ConsoleMaze {
-        let mut maze: Vec<String> = Vec::new();
+        let mut maze_str: Vec<String> = Vec::new();
+        let mut maze_style: Vec<console::StyledObject<String>> = Vec::new();
         for i in 0..(size * 2 + 1) {
             let mut s = String::new();
 
@@ -73,29 +74,33 @@ impl ConsoleMaze {
                     }
                 }
             }
-            maze.push(s);
+            maze_style.push(console::style(format!("{}", s)));
+            maze_str.push(s);
         }
 
-        ConsoleMaze { maze: maze, size: size }
+        ConsoleMaze { maze_style: maze_style, maze_str: maze_str, size: size }
     }
 
     fn set(&mut self, x: usize, y: usize, c: char) -> Result<(), String> {
-        let mut tmp: String = String::new();
-        for (i, s) in self.maze[y].chars().enumerate() {
-            if (i == x) {
-                tmp.push(c);
+        let mut tmp_str: String = String::new();
+        let mut tmp_style: console::StyledObject<String>;
+        for (i, s) in self.maze_str[y].chars().enumerate() {
+            if i == x {
+                tmp_str.push(c);
             } else {
-                tmp.push(s);
+                tmp_str.push(s);
             }
         }
-        self.maze[y] = tmp;
+        self.maze_str[y] = format!("{}", tmp_str);
+        self.maze_style[y] = console::style(format!("{}", tmp_str));
+
         Ok(())
     }
 
     pub fn get(&self, x: usize, y: usize) -> Option<char> {
         let x = 2 + x * 3;
         let y = (self.size - y) * 2;
-        match self.maze[y].chars().nth(x) {
+        match self.maze_str[y].chars().nth(x) {
             Some(c) => Some(c),
             None => None
         }
