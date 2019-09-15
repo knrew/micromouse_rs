@@ -112,7 +112,7 @@ impl MazeForTerm {
         Ok(())
     }
 
-//    pub fn get(&self, x: usize, y: usize) -> console::StyledObject<char> {
+//    pub fn get(&self, x: usize, y: usize) -> maze_console::StyledObject<char> {
 //        self.maze[(self.maze_size - y) * 2][2 + x * 3]
 //    }
 

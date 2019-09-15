@@ -1,4 +1,4 @@
-//extern crate visualizer::console;
+use micromouse_rs::*;
 
 fn main() {
     const MAZE_SIZE: usize = 16;
@@ -13,8 +13,7 @@ fn main() {
     let solver_dir: &str = &format!("{}/maze_solver/", micromouse_root);
     let program: &str = &format!("{}/{}", build_dir, PROGRAM_NAME);
 
-//    let mut display = visualizer::console::Display::new();
-    let maze = visualizer::io::read_maze(maze_file).expect("failed to read maze_file.");
+    let maze = io::read_maze(maze_file).expect("failed to read maze_file.");
 
     if false { //make solver
         process("mkdir", &["-p", build_dir].to_vec(), "./").expect("failed to mkdir build");
@@ -24,14 +23,14 @@ fn main() {
 
     process(&program, &[maze_file, search_route_file, shortest_route_file].to_vec(), "./").expect("");
 
-    let search = visualizer::io::read_route(search_route_file).expect("failed to search route file.");
-    let shortest = visualizer::io::read_route(shortest_route_file).expect("failed to shortest route file.");
+    let search = io::read_route(search_route_file).expect("failed to search route file.");
+    let shortest = io::read_route(shortest_route_file).expect("failed to shortest route file.");
 
     println!("----------");
     println!("----------");
     println!("----------");
 
-    let mut maze_display = visualizer::console::maze_display::MazeDisplay::new(MAZE_SIZE).expect("failed to initialize display.");
+    let mut maze_display = maze_console::maze_display::MazeDisplay::new(MAZE_SIZE).expect("failed to initialize display.");
 
     for (i, line) in maze.iter().enumerate() {
         for (j, w) in line.iter().enumerate() {
@@ -41,7 +40,7 @@ fn main() {
         }
     }
 
-//    maze_display.set_by_coordinate(0, 0, &console::style('A').blue()).expect("failed to set.");
+//    maze_display.set_by_coordinate(0, 0, &maze_console::style('A').blue()).expect("failed to set.");
 
     for (i, _) in search.y.iter().enumerate() {
         if i >= 1 {
