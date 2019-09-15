@@ -12,9 +12,13 @@ dirs = "2.0.2"
 console="0.9.0"
 
 [[example]]
+name = "console"
+path = "examples/console_main.rs"
+
+[[example]]
 name = "gnu"
 path = "examples/gnu_main.rs"
 
 [[example]]
-name = "console"
-path = "examples/console_main.rs"
+name = "parser"
+path = "examples/parser_main.rs"
