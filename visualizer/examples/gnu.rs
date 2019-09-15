@@ -1,6 +1,6 @@
 fn main() {
     const MAZE_SIZE: i32 = 16;
-    const MAZE_NAME: &str = "maze0037.txt";
+    const MAZE_NAME: &str = "maze0000.txt";
     const PROGRAM_NAME: &str = "examples/search_exsample";
 
     let micromouse_root: &str = &format!("{}/micromouse/", dirs::home_dir().unwrap().display());

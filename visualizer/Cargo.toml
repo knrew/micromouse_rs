@@ -16,5 +16,5 @@ name = "gnu"
 path = "examples/gnu.rs"
 
 [[example]]
-name = "cosolue"
+name = "console"
 path = "examples/console.rs"
