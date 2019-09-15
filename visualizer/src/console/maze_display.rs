@@ -1,16 +1,16 @@
 use crate::wall;
 
-pub struct Display {
+struct TermManger {
     term: console::Term,
     size: usize,
 }
 
-impl Display {
-    pub fn new() -> Display {
-        Display { term: console::Term::stdout(), size: 0 }
+impl TermManger {
+    fn new() -> TermManger {
+        TermManger { term: console::Term::stdout(), size: 0 }
     }
 
-    pub fn write_new_line(&mut self, s: &str) -> std::io::Result<()> {
+    fn write_new_line(&mut self, s: &str) -> std::io::Result<()> {
         match self.term.write_line(s) {
             Ok(_) => {}
             Err(e) => return Err(e)
@@ -20,7 +20,7 @@ impl Display {
         Ok(())
     }
 
-    pub fn write_new_styled_objects(&mut self, objects: &Vec<console::StyledObject<char>>) -> std::io::Result<()> {
+    fn write_new_styled_objects(&mut self, objects: &Vec<console::StyledObject<char>>) -> std::io::Result<()> {
         let mut s = String::new();
         for o in objects.iter() {
             s = format!("{}{}", s, o);
@@ -29,7 +29,7 @@ impl Display {
         self.write_new_line(&s)
     }
 
-    pub fn write_line(&mut self, n: usize, s: &str) -> std::io::Result<()> {
+    fn write_line(&mut self, n: usize, s: &str) -> std::io::Result<()> {
         match self.term.move_cursor_up(self.size - n) {
             Ok(_) => {}
             Err(e) => return Err(e)
@@ -53,7 +53,7 @@ impl Display {
         Ok(())
     }
 
-    pub fn write_styled_objects(&mut self, n: usize, objects: &Vec<console::StyledObject<char>>) -> std::io::Result<()> {
+    fn write_styled_objects(&mut self, n: usize, objects: &Vec<console::StyledObject<char>>) -> std::io::Result<()> {
         let mut s = String::new();
         for o in objects.iter() {
             s = format!("{}{}", s, o);
@@ -63,13 +63,13 @@ impl Display {
     }
 }
 
-pub struct ConsoleMaze {
+struct MazeForTerm {
     pub maze: Vec<Vec<console::StyledObject<char>>>,
-    pub maze_size: usize,
+    pub size: usize,
 }
 
-impl ConsoleMaze {
-    pub fn new(size: usize) -> ConsoleMaze {
+impl MazeForTerm {
+    fn new(size: usize) -> MazeForTerm {
         let mut maze: Vec<Vec<console::StyledObject<char>>> = Vec::new();
         maze.resize(size * 2 + 1, Vec::new());
 
@@ -97,10 +97,17 @@ impl ConsoleMaze {
             }
         }
 
-        ConsoleMaze { maze: maze, maze_size: size }
+        MazeForTerm { maze: maze, size: size }
     }
 
+    fn get_num_line(&self) -> usize { self.size * 2 + 1 }
+
+    fn get_num_col(&self) -> usize { self.size * 4 + 1 }
+
     fn set(&mut self, x: usize, y: usize, c: &console::StyledObject<char>) -> Result<(), String> {
+        if x >= self.get_num_col() || y >= self.get_num_line() {
+            return Err("invalid range.".to_string());
+        }
         self.maze[y][x] = c.clone();
         Ok(())
     }
@@ -109,15 +116,15 @@ impl ConsoleMaze {
 //        self.maze[(self.maze_size - y) * 2][2 + x * 3]
 //    }
 
-    pub fn set_by_coordinate(&mut self, x: usize, y: usize, c: console::StyledObject<char>) -> Result<(), String> {
+    fn set_by_coordinate(&mut self, x: usize, y: usize, c: &console::StyledObject<char>) -> Result<(), String> {
         let x = 2 + x * 4;
-        let y = (self.maze_size - y) * 2 + 1 - 2;
+        let y = (self.size - y) * 2 + 1 - 2;
         self.set(x, y, &c)
     }
 
-    pub fn set_wall(&mut self, x: usize, y: usize, wall: &wall::Wall) -> Result<(), String> {
+    fn set_wall(&mut self, x: usize, y: usize, wall: &wall::Wall) -> Result<(), String> {
         let x = 2 + x * 4;
-        let y = (self.maze_size - y) * 2 + 1 - 2;
+        let y = (self.size - y) * 2 + 1 - 2;
 
         if wall.n {
             match self.set(x - 1, y - 1, &console::style('-')) {
@@ -162,10 +169,61 @@ impl ConsoleMaze {
 
         Ok(())
     }
+
+    fn size(&self) -> usize { self.size }
 }
 
-//struct MazeDisplay {
-//    c: ,
-//    maze: ConsoleMaze,
-//}
+//MazeDisplay::new()を呼び出したあとはprintしないこと(ずれるので)
+pub struct MazeDisplay {
+    display: TermManger,
+    maze: MazeForTerm,
+}
 
+impl MazeDisplay {
+    pub fn new(size: usize) -> Result<MazeDisplay, std::io::Error> {
+        let mut md = MazeDisplay { display: TermManger::new(), maze: MazeForTerm::new(size) };
+
+        for (_, line) in md.maze.maze.iter().enumerate() {
+            match md.display.write_new_styled_objects(line) {
+                Ok(_) => {}
+                Err(e) => return Err(e)
+            }
+        }
+
+        Ok(md)
+    }
+
+    pub fn size(&self) -> usize { self.maze.size() }
+
+    pub fn set_wall(&mut self, x: usize, y: usize, w: &wall::Wall) -> Result<(), String> {
+        match self.maze.set_wall(x, y, w) {
+            Ok(_) => {}
+            Err(e) => return Err(e),
+        };
+
+        for i in 0..3 {
+            let l = (self.size() - y) * 2 - 2 + i;
+            if l < self.maze.get_num_line() {
+                match self.display.write_styled_objects(l, &self.maze.maze[l]) {
+                    Ok(_) => {}
+                    Err(e) => return Err(format!("{}", e)),
+                }
+            }
+        }
+
+        Ok(())
+    }
+
+    pub fn set(&mut self, x: usize, y: usize, c: &console::StyledObject<char>) -> Result<(), String> {
+        match self.maze.set_by_coordinate(x, y, c) {
+            Ok(_) => {}
+            Err(e) => return Err(e),
+        }
+
+        let l = (self.size() - y) * 2 - 1;
+        match self.display.write_styled_objects(l, &self.maze.maze[l]) {
+            Ok(_) => Ok(()),
+            Err(e) => Err(format!("{}", e)),
+        }
+    }
+}

@@ -13,7 +13,7 @@ console="*"
 
 [[example]]
 name = "gnu"
-path = "examples/gnu.rs"
+path = "examples/gnu_main.rs"
 
 [[example]]
 name = "console"
