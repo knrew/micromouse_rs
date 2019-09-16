@@ -1,13 +1,13 @@
 use crate::wall;
 
-struct TermManger {
+struct ConsoleManager {
     term: console::Term,
     size: usize,
 }
 
-impl TermManger {
-    fn new() -> TermManger {
-        TermManger { term: console::Term::stdout(), size: 0 }
+impl ConsoleManager {
+    fn new() -> ConsoleManager {
+        ConsoleManager { term: console::Term::stdout(), size: 0 }
     }
 
     fn write_new_line(&mut self, s: &str) -> std::io::Result<()> {
@@ -63,13 +63,13 @@ impl TermManger {
     }
 }
 
-struct MazeForTerm {
+struct MazeForConsole {
     pub maze: Vec<Vec<console::StyledObject<char>>>,
     pub size: usize,
 }
 
-impl MazeForTerm {
-    fn new(size: usize) -> MazeForTerm {
+impl MazeForConsole {
+    fn new(size: usize) -> MazeForConsole {
         let mut maze: Vec<Vec<console::StyledObject<char>>> = Vec::new();
         maze.resize(size * 2 + 1, Vec::new());
 
@@ -97,7 +97,7 @@ impl MazeForTerm {
             }
         }
 
-        MazeForTerm { maze: maze, size: size }
+        MazeForConsole { maze: maze, size: size }
     }
 
     fn get_num_line(&self) -> usize { self.size * 2 + 1 }
@@ -175,13 +175,13 @@ impl MazeForTerm {
 
 //MazeDisplay::new()を呼び出したあとはprintしないこと(ずれるので)
 pub struct MazeDisplay {
-    display: TermManger,
-    maze: MazeForTerm,
+    display: ConsoleManager,
+    maze: MazeForConsole,
 }
 
 impl MazeDisplay {
     pub fn new(size: usize) -> Result<MazeDisplay, std::io::Error> {
-        let mut md = MazeDisplay { display: TermManger::new(), maze: MazeForTerm::new(size) };
+        let mut md = MazeDisplay { display: ConsoleManager::new(), maze: MazeForConsole::new(size) };
 
         for (_, line) in md.maze.maze.iter().enumerate() {
             match md.display.write_new_styled_objects(line) {
@@ -214,7 +214,7 @@ impl MazeDisplay {
         Ok(())
     }
 
-    pub fn set(&mut self, x: usize, y: usize, c: &console::StyledObject<char>) -> Result<(), String> {
+    pub fn visit(&mut self, x: usize, y: usize, c: &console::StyledObject<char>) -> Result<(), String> {
         match self.maze.set_by_coordinate(x, y, c) {
             Ok(_) => {}
             Err(e) => return Err(e),
@@ -225,5 +225,36 @@ impl MazeDisplay {
             Ok(_) => Ok(()),
             Err(e) => Err(format!("{}", e)),
         }
+    }
+
+    pub fn connect(&mut self, x0: usize, y0: usize, x1: usize, y1: usize) -> Result<(), String> {
+        let x;
+        let y;
+        let c: console::StyledObject<char>;
+
+        if x0 == x1 {
+            x = 2 + x0 * 4;
+            y = (self.size() - std::cmp::max(y0, y1)) * 2;
+            c = console::style('|').red();
+        } else if y0 == y1 {
+            x = 2 + std::cmp::min(x0, x1) * 4 + 2;
+            y = (self.size() - y0) * 2 - 1;
+            c = console::style('-').red();
+        } else {
+            return Err("invalid arguments.".to_string());
+        }
+
+        match self.maze.set(x, y, &c) {
+            Ok(_) => {}
+            Err(e) => return Err(e),
+        }
+
+        let l = y.clone();
+        match self.display.write_styled_objects(l, &self.maze.maze[l]) {
+            Ok(_) => {}
+            Err(e) => return Err(format!("{}", e)),
+        };
+
+        Ok(())
     }
 }
