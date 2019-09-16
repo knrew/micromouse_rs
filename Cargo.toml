@@ -6,8 +6,6 @@ edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-target = "examples/console_main.rs"
-
 [dependencies]
 gnuplot="0.0.31"
 dirs = "2.0.2"
@@ -15,12 +13,12 @@ console="0.9.0"
 
 [[bin]]
 name = "console"
-path = "examples/console_main.rs"
+path = "main/console_main.rs"
 
 [[bin]]
 name = "gnu"
-path = "examples/gnu_main.rs"
+path = "main/gnu_main.rs"
 
 [[bin]]
 name = "parser"
-path = "examples/parser_main.rs"
+path = "main/parser_main.rs"
