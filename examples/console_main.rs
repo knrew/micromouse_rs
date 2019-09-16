@@ -28,13 +28,13 @@ fn main() {
     let search = io::read_route(search_route_file).expect("failed to search route file.");
     let shortest = io::read_route(shortest_route_file).expect("failed to shortest route file.");
 
-    let mut maze_display = maze_console::maze_display::MazeDisplay::new(MAZE_SIZE).expect("failed to initialize display.");
+    let mut console_maze = maze_console::maze_display::MazeDisplay::new(MAZE_SIZE).expect("failed to initialize display.");
 
     for (i, line) in maze.iter().enumerate() {
         for (j, w) in line.iter().enumerate() {
             let x = j;
             let y = MAZE_SIZE - 1 - i;
-            maze_display.set_wall(x, y, w).expect("failed to set wall.");
+            console_maze.set_wall(x, y, w).expect("failed to set wall.");
         }
     }
 
@@ -42,12 +42,12 @@ fn main() {
         if i >= 1 {
             let x = search.x[i - 1] as usize;
             let y = search.y[i - 1] as usize;
-            maze_display.visit(x, y, &console::style('*').blue()).expect("failed to set.");
+            console_maze.visit(x, y, &console::style('*').blue()).expect("failed to set.");
         }
 
         let x = search.x[i] as usize;
         let y = search.y[i] as usize;
-        maze_display.visit(x, y, &console::style('*').red()).expect("failed to set.");
+        console_maze.visit(x, y, &console::style('*').red()).expect("failed to set.");
 
         std::thread::sleep(std::time::Duration::from_millis(100));
     }
@@ -55,9 +55,9 @@ fn main() {
     for (i, _) in shortest.y.iter().enumerate() {
         let x = (shortest.x[i]) as usize;
         let y = (shortest.y[i]) as usize;
-        maze_display.visit(x, y, &console::style('*').red()).expect("failed to set.");
+        console_maze.visit(x, y, &console::style('*').red()).expect("failed to set.");
         if i >= 1 {
-            maze_display.connect(x, y, shortest.x[i - 1] as usize, shortest.y[i - 1] as usize).expect("failed to connect.");
+            console_maze.connect(x, y, shortest.x[i - 1] as usize, shortest.y[i - 1] as usize).expect("failed to connect.");
         }
     }
 }
