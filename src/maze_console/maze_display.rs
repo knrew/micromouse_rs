@@ -228,25 +228,25 @@ impl MazeDisplay {
     }
 
     pub fn connect(&mut self, x0: usize, y0: usize, x1: usize, y1: usize) -> Result<(), String> {
-        let x;
         let y;
-        let c: console::StyledObject<char>;
-
         if x0 == x1 {
-            x = 2 + x0 * 4;
+            let x = 2 + x0 * 4;
             y = (self.size() - std::cmp::max(y0, y1)) * 2;
-            c = console::style('|').red();
+            match self.maze.set(x, y, &console::style('|').red()) {
+                Ok(_) => {}
+                Err(e) => return Err(e),
+            }
         } else if y0 == y1 {
-            x = 2 + std::cmp::min(x0, x1) * 4 + 2;
-            y = (self.size() - y0) * 2 - 1;
-            c = console::style('-').red();
+            let x = 2 + std::cmp::min(x0, x1) * 4 + 2;
+            y = (self.size() - y0) * 2;
+            for i in 0..3 {
+                match self.maze.set(x + i, y, &console::style('-').red()) {
+                    Ok(_) => {}
+                    Err(e) => return Err(e),
+                }
+            }
         } else {
             return Err("invalid arguments.".to_string());
-        }
-
-        match self.maze.set(x, y, &c) {
-            Ok(_) => {}
-            Err(e) => return Err(e),
         }
 
         let l = y.clone();

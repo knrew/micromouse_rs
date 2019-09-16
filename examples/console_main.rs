@@ -17,7 +17,7 @@ fn main() {
 
     let maze = io::read_maze(maze_file).expect("failed to read maze_file.");
 
-    if false { //make solver
+    if false { //build solver
         process("mkdir", &["-p", build_dir].to_vec(), "./").expect("failed to mkdir build");
         process("cmake", &[solver_dir].to_vec(), build_dir).expect("failed to cmake");
         process("make", &[].to_vec(), build_dir).expect("failed to make");
