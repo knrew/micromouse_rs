@@ -5,7 +5,7 @@ fn main() {
 
     const MAZE_SIZE: usize = 16;
     const PROGRAM_NAME: &str = "examples/search_exsample";
-    let maze_name: &str = &format!("maze{}.txt", if args.len() < 1 { "0000" } else { &args[1] });
+    let maze_name: &str = &format!("maze{}.txt", if args.len() < 2 { "0000" } else { &args[1] });
 
     let micromouse_root: &str = &format!("{}/micromouse/", dirs::home_dir().unwrap().display());
     let build_dir: &str = "./build/";

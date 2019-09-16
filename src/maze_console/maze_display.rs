@@ -237,8 +237,8 @@ impl MazeDisplay {
                 Err(e) => return Err(e),
             }
         } else if y0 == y1 {
-            let x = 2 + std::cmp::min(x0, x1) * 4 + 2;
-            y = (self.size() - y0) * 2;
+            let x = 2 + std::cmp::min(x0, x1) * 4 + 1;
+            y = (self.size() - y0) * 2 - 1;
             for i in 0..3 {
                 match self.maze.set(x + i, y, &console::style('-').red()) {
                     Ok(_) => {}
