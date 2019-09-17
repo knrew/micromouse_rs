@@ -1,3 +1,7 @@
+//! コンソールへの描画を制御するクラス
+//! `write_new_*`で新しい行へ出力
+//! `wirte_*`で`n`で指定した行を書き換える(`n`は上から数えた行数)．
+
 pub struct ConsoleManager {
     term: console::Term,
     size: usize,

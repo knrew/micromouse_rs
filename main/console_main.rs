@@ -29,6 +29,7 @@ fn main() {
     let shortest = io::read_route(shortest_route_file).expect("failed to shortest route file.");
 
     let mut console_maze = maze_console::maze_display::ConsoleMaze::new(MAZE_SIZE).expect("failed to initialize display.");
+    console_maze.print("start!").expect("");
 
     for (i, line) in maze.iter().enumerate() {
         for (j, w) in line.iter().enumerate() {
@@ -42,12 +43,15 @@ fn main() {
         if i >= 1 {
             let x = search.x[i - 1] as usize;
             let y = search.y[i - 1] as usize;
-            console_maze.visit(x, y, &console::style('*').blue()).expect("failed to set.");
+            console_maze.visit(x, y, console::Color::Blue).expect("failed to set.");
         }
 
         let x = search.x[i] as usize;
         let y = search.y[i] as usize;
-        console_maze.visit(x, y, &console::style('*').red()).expect("failed to set.");
+        console_maze.visit(x, y, console::Color::Red).expect("failed to set.");
+
+        const RUNNING: [&str; 4] = ["running", "running.", "running..", "running..."];
+        console_maze.print(RUNNING[i % 4]).expect("");
 
         std::thread::sleep(std::time::Duration::from_millis(100));
     }
@@ -55,11 +59,13 @@ fn main() {
     for (i, _) in shortest.y.iter().enumerate() {
         let x = (shortest.x[i]) as usize;
         let y = (shortest.y[i]) as usize;
-        console_maze.visit(x, y, &console::style('*').red()).expect("failed to set.");
+        console_maze.visit(x, y, console::Color::Red).expect("failed to set.");
         if i >= 1 {
-            console_maze.connect(x, y, shortest.x[i - 1] as usize, shortest.y[i - 1] as usize).expect("failed to connect.");
+            console_maze.connect(x, y, shortest.x[i - 1] as usize, shortest.y[i - 1] as usize, console::Color::Red).expect("failed to connect.");
         }
     }
+
+    console_maze.print("finish.").expect("");
 }
 
 fn process(program: &str, args: &Vec<&str>, dir: &str) -> Result<std::process::ExitStatus, std::io::Error> {

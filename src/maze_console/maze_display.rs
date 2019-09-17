@@ -1,8 +1,8 @@
 use crate::wall;
 use crate::maze_console::*;
-use console::StyledObject;
 
-//new()を呼び出したあとはprintしないこと(ずれるので)
+// new()を呼び出したあとはprint!やprintln!しないこと(ずれるので)
+// 文字列の出力が必要ならメンバ関数のprintを使用
 pub struct ConsoleMaze {
     display: console_manager::ConsoleManager,
     maze: maze_for_console::MazeForConsole,
@@ -10,20 +10,24 @@ pub struct ConsoleMaze {
 
 impl ConsoleMaze {
     pub fn new(size: usize) -> Result<ConsoleMaze, std::io::Error> {
-        let mut md = ConsoleMaze { display: console_manager::ConsoleManager::new(), maze: maze_for_console::MazeForConsole::new(size) };
+        let mut display = console_manager::ConsoleManager::new();
+        let maze = maze_for_console::MazeForConsole::new(size);
 
-        for (_, line) in md.maze.iter().enumerate() {
-            match md.display.write_new_line_styled_objects(line) {
+        for line in maze.iter() {
+            match display.write_new_line_styled_objects(line) {
                 Ok(_) => {}
                 Err(e) => return Err(e)
             }
         }
 
-        Ok(md)
+        display.write_new_line_str("");
+
+        Ok(ConsoleMaze { display: display, maze: maze })
     }
 
     pub fn size(&self) -> usize { self.maze.size() }
 
+    // 座標(x, y)の四方の壁を指定して描画
     pub fn set_wall(&mut self, x: usize, y: usize, w: &wall::Wall) -> Result<(), String> {
         match self.maze.set_wall(x, y, w) {
             Ok(_) => {}
@@ -31,7 +35,7 @@ impl ConsoleMaze {
         };
 
         for i in 0..3 {
-            let l = (self.size() - y) * 2 - 2 + i;
+            let l = self.maze.to_line_from_y(y) - 1 + i;
             if l < self.maze.get_num_line() {
                 match self.display.write_line_styled_objects(l, &self.maze[l]) {
                     Ok(_) => {}
@@ -43,33 +47,37 @@ impl ConsoleMaze {
         Ok(())
     }
 
-    pub fn visit(&mut self, x: usize, y: usize, c: &console::StyledObject<char>) -> Result<(), String> {
-        match self.maze.set_by_coordinate(x, y, c) {
+    // 座標(x, y)を訪れた座標として`*`でマーク．引数colorで描画する色を指定
+    pub fn visit(&mut self, x: usize, y: usize, color: console::Color) -> Result<(), String> {
+        match self.maze.set_by_coordinate(x, y, &console::style('*').fg(color)) {
             Ok(_) => {}
             Err(e) => return Err(e),
         }
 
-        let l = (self.size() - y) * 2 - 1;
+        let l = self.maze.to_line_from_y(y);
         match self.display.write_line_styled_objects(l, &self.maze[l]) {
             Ok(_) => Ok(()),
             Err(e) => Err(format!("{}", e)),
         }
     }
 
-    pub fn connect(&mut self, x0: usize, y0: usize, x1: usize, y1: usize) -> Result<(), String> {
+    // (x0, y0), (x1, y1)間をつなぐ直線を描画(引数colorで色を指定)
+    // 隣接しない座標を指定した場合エラー
+    pub fn connect(&mut self, x0: usize, y0: usize, x1: usize, y1: usize, color: console::Color) -> Result<(), String> {
         let y;
+
         if x0 == x1 {
-            let x = 2 + x0 * 4;
-            y = (self.size() - std::cmp::max(y0, y1)) * 2;
-            match self.maze.set(x, y, &console::style('|').red()) {
+            let x = self.maze.to_col_from_x(x0);
+            y = self.maze.to_line_from_y(std::cmp::max(y0, y1)) + 1;
+            match self.maze.set(x, y, &console::style('|').fg(color)) {
                 Ok(_) => {}
                 Err(e) => return Err(e),
             }
         } else if y0 == y1 {
-            let x = 2 + std::cmp::min(x0, x1) * 4 + 1;
-            y = (self.size() - y0) * 2 - 1;
+            let x = self.maze.to_col_from_x(std::cmp::min(x0, x1)) + 1;
+            y = self.maze.to_line_from_y(y0);
             for i in 0..3 {
-                match self.maze.set(x + i, y, &console::style('-').red()) {
+                match self.maze.set(x + i, y, &console::style('-').fg(color)) {
                     Ok(_) => {}
                     Err(e) => return Err(e),
                 }
@@ -85,5 +93,12 @@ impl ConsoleMaze {
         };
 
         Ok(())
+    }
+
+    fn print_cursor(&self) -> usize { self.maze.get_num_line() }
+
+    // 迷路の下に1行文字列を表示
+    pub fn print(&mut self, s: &str) -> std::io::Result<()> {
+        self.display.write_line_str(self.print_cursor(), s)
     }
 }

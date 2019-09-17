@@ -45,51 +45,43 @@ impl MazeForConsole {
         MazeForConsole { maze: maze, size: size }
     }
 
+    pub fn iter(&self) -> std::slice::Iter<'_, Vec<console::StyledObject<char>>> {
+        self.maze.iter()
+    }
+
     pub fn size(&self) -> usize { self.size }
+
+    pub fn to_col_from_x(&self, x: usize) -> usize { 2 + x * 4 }
+
+    pub fn to_line_from_y(&self, y: usize) -> usize { (self.size - y) * 2 - 1 }
 
     pub fn get_num_line(&self) -> usize { self.size * 2 + 1 }
 
     pub fn get_num_col(&self) -> usize { self.size * 4 + 1 }
 
-    pub fn iter(&self) -> std::slice::Iter<'_, Vec<console::StyledObject<char>>> {
-        self.maze.iter()
-    }
-
-    pub fn set(&mut self, x: usize, y: usize, c: &console::StyledObject<char>) -> Result<(), String> {
-        if x >= self.get_num_col() || y >= self.get_num_line() {
+    pub fn set(&mut self, col: usize, line: usize, c: &console::StyledObject<char>) -> Result<(), String> {
+        if col >= self.get_num_col() || line >= self.get_num_line() {
             return Err("invalid range.".to_string());
         }
-        self.maze[y][x] = c.clone();
+        self.maze[line][col] = c.clone();
         Ok(())
     }
 
-//    pub fn get(&self, x: usize, y: usize) -> maze_console::StyledObject<char> {
-//        self.maze[(self.maze_size - y) * 2][2 + x * 3]
-//    }
-
     pub fn set_by_coordinate(&mut self, x: usize, y: usize, c: &console::StyledObject<char>) -> Result<(), String> {
-        let x = 2 + x * 4;
-        let y = (self.size - y) * 2 + 1 - 2;
-        self.set(x, y, &c)
+        self.set(self.to_col_from_x(x), self.to_line_from_y(y), &c)
     }
 
     pub fn set_wall(&mut self, x: usize, y: usize, wall: &wall::Wall) -> Result<(), String> {
-        let x = 2 + x * 4;
-        let y = (self.size - y) * 2 + 1 - 2;
+        let x = self.to_col_from_x(x);
+        let y = self.to_line_from_y(y);
 
         if wall.n {
-            match self.set(x - 1, y - 1, &console::style('-')) {
-                Ok(_) => {}
-                Err(e) => return Err(e)
-            };
-            match self.set(x, y - 1, &console::style('-')) {
-                Ok(_) => {}
-                Err(e) => return Err(e)
-            };
-            match self.set(x + 1, y - 1, &console::style('-')) {
-                Ok(_) => {}
-                Err(e) => return Err(e)
-            };
+            for i in 0..3 {
+                match self.set(x - 1 + i, y - 1, &console::style('-')) {
+                    Ok(_) => {}
+                    Err(e) => return Err(e)
+                };
+            }
         }
         if wall.e {
             match self.set(x + 2, y, &console::style('|')) {
@@ -98,18 +90,12 @@ impl MazeForConsole {
             };
         }
         if wall.s {
-            match self.set(x - 1, y + 1, &console::style('-')) {
-                Ok(_) => {}
-                Err(e) => return Err(e)
-            };
-            match self.set(x, y + 1, &console::style('-')) {
-                Ok(_) => {}
-                Err(e) => return Err(e)
-            };
-            match self.set(x + 1, y + 1, &console::style('-')) {
-                Ok(_) => {}
-                Err(e) => return Err(e)
-            };
+            for i in 0..3 {
+                match self.set(x - 1 + i, y + 1, &console::style('-')) {
+                    Ok(_) => {}
+                    Err(e) => return Err(e)
+                };
+            }
         }
         if wall.w {
             match self.set(x - 2, y, &console::style('|')) {
