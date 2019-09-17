@@ -10,25 +10,25 @@ fn make_ax(fig: &mut gnuplot::Figure) -> &mut gnuplot::Axes2D {
     ax
 }
 
-pub fn plot(maze: &wall::Maze, maze_size: i32, search: &io::Route, shortest: &io::Route, interval_ms: u64, history: bool) {
+pub fn plot(maze: &wall::Maze, maze_size: usize, search: &io::Route, shortest: &io::Route, interval_ms: u64, history: bool) {
     let mut fig = gnuplot::Figure::new();
     plot_route_with_animation(&mut fig, maze, maze_size, search, interval_ms, history);
     plot_routes(&mut fig, maze, maze_size, search, shortest);
     plot_maze(&mut fig, maze, maze_size, true);
 }
 
-pub fn plot_maze(fig: &mut gnuplot::Figure, maze: &wall::Maze, maze_size: i32, show: bool) {
+pub fn plot_maze(fig: &mut gnuplot::Figure, maze: &wall::Maze, maze_size: usize, show: bool) {
     plot_maze_with_ax(make_ax(fig), maze, maze_size);
     if show { fig.show(); }
 }
 
-fn plot_maze_with_ax(ax: &mut gnuplot::Axes2D, maze: &wall::Maze, maze_size: i32) {
+fn plot_maze_with_ax(ax: &mut gnuplot::Axes2D, maze: &wall::Maze, maze_size: usize) {
     const COLOR: &str = "black";
 
     for (i, line) in maze.iter().enumerate() {
         for (j, block) in line.iter().enumerate() {
             let x = j as i32;
-            let y = maze_size - (i as i32);
+            let y = maze_size - i;
             if block.n {
                 ax.lines([x, x + 1].iter(), [y, y].iter(), &[gnuplot::Color(COLOR)]);
             }
@@ -45,7 +45,7 @@ fn plot_maze_with_ax(ax: &mut gnuplot::Axes2D, maze: &wall::Maze, maze_size: i32
     }
 }
 
-pub fn plot_route_with_animation(fig: &mut gnuplot::Figure, maze: &wall::Maze, maze_size: i32, route: &io::Route, interval_ms: u64, history: bool) {
+pub fn plot_route_with_animation(fig: &mut gnuplot::Figure, maze: &wall::Maze, maze_size: usize, route: &io::Route, interval_ms: u64, history: bool) {
     struct RouteF64 {
         x: Vec<f64>,
         y: Vec<f64>,
@@ -82,7 +82,7 @@ pub fn plot_route_with_animation(fig: &mut gnuplot::Figure, maze: &wall::Maze, m
     }
 }
 
-pub fn plot_routes(fig: &mut gnuplot::Figure, maze: &wall::Maze, maze_size: i32, search: &io::Route, shortest: &io::Route) {
+pub fn plot_routes(fig: &mut gnuplot::Figure, maze: &wall::Maze, maze_size: usize, search: &io::Route, shortest: &io::Route) {
     fig.clear_axes();
     let mut ax = make_ax(fig);
     plot_maze_with_ax(&mut ax, &maze, maze_size);

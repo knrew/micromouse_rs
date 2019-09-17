@@ -12,6 +12,10 @@ dirs = "2.0.2"
 console="0.9.0"
 
 [[bin]]
+name = "build_solver"
+path = "main/build_solver.rs"
+
+[[bin]]
 name = "console"
 path = "main/console_main.rs"
 
