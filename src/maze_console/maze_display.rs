@@ -95,10 +95,10 @@ impl ConsoleMaze {
         Ok(())
     }
 
-    fn print_cursor(&self) -> usize { self.maze.get_num_line() }
+    fn cursor_for_print(&self) -> usize { self.maze.get_num_line() }
 
     // 迷路の下に1行文字列を表示
     pub fn print(&mut self, s: &str) -> std::io::Result<()> {
-        self.display.write_line_str(self.print_cursor(), s)
+        self.display.write_line_str(self.cursor_for_print(), s)
     }
 }

@@ -15,7 +15,7 @@ impl Parameters {
     pub fn new() -> Parameters {
         let args: Vec<String> = std::env::args().collect();
         let maze_size: usize = 16;
-        let program_name = "examples/search_exsample".to_string();
+        let program_name = "tests/search_test".to_string();
         let maze_name = format!("maze{}.txt", if args.len() < 2 { "0000" } else { &args[1] });
 //        let maze_name = maze_name.to_string();
         let micromouse_root = format!("{}/micromouse/", dirs::home_dir().unwrap().display());

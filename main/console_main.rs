@@ -11,6 +11,8 @@ fn main() {
     let search = io::read_route(&params.search_route_file).expect("failed to search route file.");
     let shortest = io::read_route(&params.shortest_route_file).expect("failed to shortest route file.");
 
+    bash_process::process("rm", &[&params.search_route_file as &str, &params.shortest_route_file].to_vec(), "./").expect("failed to delete file.");
+
     let mut console_maze = maze_console::maze_display::ConsoleMaze::new(params.maze_size).expect("failed to initialize display.");
     console_maze.print("start!").expect("");
 
@@ -36,7 +38,7 @@ fn main() {
         const RUNNING: [&str; 4] = ["running", "running.", "running..", "running..."];
         console_maze.print(RUNNING[i % 4]).expect("");
 
-        std::thread::sleep(std::time::Duration::from_millis(100));
+        std::thread::sleep(std::time::Duration::from_millis(50));
     }
 
     for (i, _) in shortest.y.iter().enumerate() {

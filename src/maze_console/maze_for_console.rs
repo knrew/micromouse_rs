@@ -2,6 +2,7 @@ use crate::wall;
 
 pub struct MazeForConsole {
     maze: Vec<Vec<console::StyledObject<char>>>,
+    has_wall: Vec<Vec<bool>>,
     size: usize,
 }
 
@@ -17,6 +18,9 @@ impl MazeForConsole {
     pub fn new(size: usize) -> MazeForConsole {
         let mut maze: Vec<Vec<console::StyledObject<char>>> = Vec::new();
         maze.resize(size * 2 + 1, Vec::new());
+
+        let mut has_wall: Vec<Vec<bool>> = Vec::new();
+        has_wall.resize(size * 2 + 1, Vec::new());
 
         for i in 0..(size * 2 + 1) {
             let mut s;
@@ -39,10 +43,11 @@ impl MazeForConsole {
 
             for c in s.chars() {
                 maze[i].push(console::style(c));
+                has_wall[i].push(if c == ' ' { false } else { true })
             }
         }
 
-        MazeForConsole { maze: maze, size: size }
+        MazeForConsole { maze: maze, has_wall: has_wall, size: size }
     }
 
     pub fn iter(&self) -> std::slice::Iter<'_, Vec<console::StyledObject<char>>> {
@@ -59,16 +64,24 @@ impl MazeForConsole {
 
     pub fn get_num_col(&self) -> usize { self.size * 4 + 1 }
 
-    pub fn set(&mut self, col: usize, line: usize, c: &console::StyledObject<char>) -> Result<(), String> {
+    // 壁があっても上書き許可(壁描画用)
+    fn forced_set(&mut self, col: usize, line: usize, c: &console::StyledObject<char>) -> Result<(), String> {
         if col >= self.get_num_col() || line >= self.get_num_line() {
             return Err("invalid range.".to_string());
         }
+
         self.maze[line][col] = c.clone();
         Ok(())
     }
 
+    // 壁があれば描画されない(上書き禁止)
+    pub fn set(&mut self, col: usize, line: usize, c: &console::StyledObject<char>) -> Result<(), String> {
+        if self.has_wall[line][col] { return Ok(()); }
+        self.forced_set(col, line, c)
+    }
+
     pub fn set_by_coordinate(&mut self, x: usize, y: usize, c: &console::StyledObject<char>) -> Result<(), String> {
-        self.set(self.to_col_from_x(x), self.to_line_from_y(y), &c)
+        self.forced_set(self.to_col_from_x(x), self.to_line_from_y(y), &c)
     }
 
     pub fn set_wall(&mut self, x: usize, y: usize, wall: &wall::Wall) -> Result<(), String> {
@@ -77,28 +90,32 @@ impl MazeForConsole {
 
         if wall.n {
             for i in 0..3 {
-                match self.set(x - 1 + i, y - 1, &console::style('-')) {
+                self.has_wall[y - 1][x - 1 + i] = true;
+                match self.forced_set(x - 1 + i, y - 1, &console::style('-')) {
                     Ok(_) => {}
                     Err(e) => return Err(e)
                 };
             }
         }
         if wall.e {
-            match self.set(x + 2, y, &console::style('|')) {
+            self.has_wall[y][x + 2] = true;
+            match self.forced_set(x + 2, y, &console::style('|')) {
                 Ok(_) => {}
                 Err(e) => return Err(e)
             };
         }
         if wall.s {
             for i in 0..3 {
-                match self.set(x - 1 + i, y + 1, &console::style('-')) {
+                self.has_wall[y + 1][x - 1 + i] = true;
+                match self.forced_set(x - 1 + i, y + 1, &console::style('-')) {
                     Ok(_) => {}
                     Err(e) => return Err(e)
                 };
             }
         }
         if wall.w {
-            match self.set(x - 2, y, &console::style('|')) {
+            self.has_wall[y][x - 2] = true;
+            match self.forced_set(x - 2, y, &console::style('|')) {
                 Ok(_) => {}
                 Err(e) => return Err(e)
             };
