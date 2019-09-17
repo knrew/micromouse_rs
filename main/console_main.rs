@@ -28,7 +28,7 @@ fn main() {
     let search = io::read_route(search_route_file).expect("failed to search route file.");
     let shortest = io::read_route(shortest_route_file).expect("failed to shortest route file.");
 
-    let mut console_maze = maze_console::maze_display::MazeDisplay::new(MAZE_SIZE).expect("failed to initialize display.");
+    let mut console_maze = maze_console::maze_display::ConsoleMaze::new(MAZE_SIZE).expect("failed to initialize display.");
 
     for (i, line) in maze.iter().enumerate() {
         for (j, w) in line.iter().enumerate() {
