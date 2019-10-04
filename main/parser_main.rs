@@ -1,9 +1,11 @@
 use micromouse_rs::*;
 
+mod parameters;
+use parameters::*;
+
 fn main() {
-    let micromouse_root: &str = &format!("{}/micromouse/", dirs::home_dir().unwrap().display());
-    let maze_folder_path: &str = &format!("{}/micromouse_maze_tool/mazefiles/text/", micromouse_root);
-    let output_dir: &str = &format!("{}/micromouse_rs/maze_data/", micromouse_root);
+    let maze_folder_path: &str = &format!("{}/micromouse_maze_tool/mazefiles/text/", micromouse_root());
+    let output_dir: &str = &format!("{}/micromouse_rs/maze_data/", micromouse_root());
     let readme_file: &str = &format!("{}/README.txt", output_dir);
 
     let maze_names = match get_maze_names(maze_folder_path) {

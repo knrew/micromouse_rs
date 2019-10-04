@@ -1,25 +1,24 @@
 use micromouse_rs::*;
 
 mod parameters;
+use parameters::*;
 
 fn main() {
-    let params = parameters::Parameters::new();
+    bash_process::process(&program(), &[&maze_file() as &str, &search_route_file(), &shortest_route_file()].to_vec(), "./").expect("failed to run solver.");
 
-    bash_process::process(&params.program, &[&params.maze_file as &str, &params.search_route_file, &params.shortest_route_file].to_vec(), "./").expect("failed to run solver.");
+    let maze = io::read_maze(&maze_file()).expect("failed to read maze_file.");
+    let search = io::read_route(&search_route_file()).expect("failed to search route file.");
+    let shortest = io::read_route(&shortest_route_file()).expect("failed to shortest route file.");
 
-    let maze = io::read_maze(&params.maze_file).expect("failed to read maze_file.");
-    let search = io::read_route(&params.search_route_file).expect("failed to search route file.");
-    let shortest = io::read_route(&params.shortest_route_file).expect("failed to shortest route file.");
+    bash_process::process("rm", &[&search_route_file() as &str, &shortest_route_file()].to_vec(), "./").expect("failed to delete file.");
 
-    bash_process::process("rm", &[&params.search_route_file as &str, &params.shortest_route_file].to_vec(), "./").expect("failed to delete file.");
-
-    let mut console_maze = maze_console::maze_display::ConsoleMaze::new(params.maze_size).expect("failed to initialize display.");
+    let mut console_maze = maze_console::maze_display::ConsoleMaze::new(maze_size()).expect("failed to initialize display.");
     console_maze.print("start!").expect("");
 
     for (i, line) in maze.iter().enumerate() {
         for (j, w) in line.iter().enumerate() {
             let x = j;
-            let y = params.maze_size - 1 - i;
+            let y = maze_size() - 1 - i;
             console_maze.set_wall(x, y, w).expect("failed to set wall.");
         }
     }

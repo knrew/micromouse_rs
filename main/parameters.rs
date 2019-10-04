@@ -1,42 +1,32 @@
-pub struct Parameters {
-    pub maze_size: usize,
-    pub program_name: String,
-    pub maze_name: String,
-    pub micromouse_root: String,
-    pub build_dir: String,
-    pub maze_file: String,
-    pub search_route_file: String,
-    pub shortest_route_file: String,
-    pub solver_dir: String,
-    pub program: String,
+#[allow(dead_code)]
+pub fn micromouse_root() -> String { format!("{}/../", std::env::current_dir().unwrap().display()) }
+
+#[allow(dead_code)]
+pub fn solver_dir() -> String { format!("{}/maze_solver/", micromouse_root()) }
+
+#[allow(dead_code)]
+pub fn program_name() -> &'static str { "tests/search_test" }
+
+#[allow(dead_code)]
+pub fn maze_size() -> usize { 16 }
+
+#[allow(dead_code)]
+pub fn maze_name() -> String {
+    let args: Vec<String> = std::env::args().collect();
+    format!("maze{}.txt", if args.len() < 2 { "0000" } else { &args[1] })
 }
 
-impl Parameters {
-    pub fn new() -> Parameters {
-        let args: Vec<String> = std::env::args().collect();
-        let maze_size: usize = 16;
-        let program_name = "tests/search_test".to_string();
-        let maze_name = format!("maze{}.txt", if args.len() < 2 { "0000" } else { &args[1] });
-//        let maze_name = maze_name.to_string();
-        let micromouse_root = format!("{}/micromouse/", dirs::home_dir().unwrap().display());
-        let build_dir = "./build/".to_string();
-        let maze_file = format!("{}/maze_data/{}", micromouse_root, maze_name);
-        let search_route_file = format!("{}/search.csv", build_dir);
-        let shortest_route_file = format!("{}/shortest.csv", build_dir);
-        let solver_dir = format!("{}/maze_solver/", micromouse_root);
-        let program = format!("{}/{}", build_dir, program_name);
+#[allow(dead_code)]
+pub fn maze_file() -> String { format!("{}/maze_data/{}", micromouse_root(), maze_name()) }
 
-        Parameters {
-            maze_size: maze_size,
-            program_name: program_name,
-            maze_name: maze_name,
-            micromouse_root: micromouse_root,
-            build_dir: build_dir,
-            maze_file: maze_file,
-            search_route_file: search_route_file,
-            shortest_route_file: shortest_route_file,
-            solver_dir: solver_dir,
-            program: program,
-        }
-    }
-}
+#[allow(dead_code)]
+pub fn build_dir() -> String { String::from("./build/") }
+
+#[allow(dead_code)]
+pub fn search_route_file() -> String { format!("{}/search.csv", build_dir()) }
+
+#[allow(dead_code)]
+pub fn shortest_route_file() -> String { format!("{}/shortest.csv", build_dir()) }
+
+#[allow(dead_code)]
+pub fn program() -> String { format!("{}/{}", build_dir(), program_name()) }
